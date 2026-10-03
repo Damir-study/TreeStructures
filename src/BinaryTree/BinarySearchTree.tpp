@@ -8,31 +8,31 @@ BinarySearchTree<T>::BinarySearchTree()
 
 template <typename T>
 BinarySearchTree<T>::BinarySearchTree(
-    typename BinarySearchTreeBase<T>::Comparator compare)
+    Comparator compare)
     : BinarySearchTreeBase<T>(compare) {}
 
 template <typename T>
 void BinarySearchTree<T>::add(const T& new_value) {
-    auto current = &this->root;
+    Node** current = &root;
 
     while (*current) {
-        int result = this->compare(new_value, (*current)->data);
+        int result = compare(new_value, (*current)->data);
 
         if (result < 0) current = &(*current)->left;
         else if (result > 0) current = &(*current)->right;
         else throw std::runtime_error("Value already exists");
     }
 
-    *current = new typename BinarySearchTreeBase<T>::Node(new_value);
-    ++this->size;
+    *current = new Node(new_value);
+    ++size;
 }
 
 template <typename T>
 void BinarySearchTree<T>::remove(const T& value) {
-    auto node_ptr = &this->root;
+    Node** node_ptr = &root;
 
     while (*node_ptr) {
-        int result = this->compare(value, (*node_ptr)->data);
+        int result = compare(value, (*node_ptr)->data);
         if (result == 0) break;
 
         if (result < 0) node_ptr = &(*node_ptr)->left;
@@ -41,7 +41,7 @@ void BinarySearchTree<T>::remove(const T& value) {
 
     if (!*node_ptr) return;
 
-    auto removed = *node_ptr;
+    Node* removed = *node_ptr;
 
     if (!removed->left) {
         *node_ptr = removed->right;
@@ -50,14 +50,14 @@ void BinarySearchTree<T>::remove(const T& value) {
         *node_ptr = removed->left;
     }
     else {
-        auto replacement_link = &removed->right;
+        Node** replacement_ptr = &removed->right;
 
-        while ((*replacement_link)->left) {
-            replacement_link = &(*replacement_link)->left;
+        while ((*replacement_ptr)->left) {
+            replacement_ptr = &(*replacement_ptr)->left;
         }
 
-        auto replacement = *replacement_link;
-        *replacement_link = replacement->right;
+        Node* replacement = *replacement_ptr;
+        *replacement_ptr = replacement->right;
 
         replacement->left = removed->left;
         replacement->right = removed->right;
@@ -65,5 +65,5 @@ void BinarySearchTree<T>::remove(const T& value) {
     }
 
     delete removed;
-    --this->size;
+    --size;
 }

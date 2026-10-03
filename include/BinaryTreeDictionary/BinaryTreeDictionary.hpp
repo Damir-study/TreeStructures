@@ -6,6 +6,8 @@
 
 template <typename Key, typename Value>
 class BinaryTreeDictionary : public IBinaryTreeDictionary<Key, Value> {
+public:
+    using Comparator = int (*)(const Key&, const Key&);
 private:
     struct Pair {
         Key key;
@@ -22,10 +24,7 @@ private:
     Comparator compare;
     BinarySearchTree<Pair> tree;
     int default_compare(const Key& first, const Key& second);
-
 public:
-    using Comparator = int (*)(const T&, const T&);
-
     BinaryTreeDictionary(Comparator compare = default_compare);
     ~BinaryTreeDictionary() override = default;
     BinaryTreeDictionary(const BinaryTreeDictionary&) = default;

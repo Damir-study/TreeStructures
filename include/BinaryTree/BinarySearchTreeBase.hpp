@@ -12,12 +12,14 @@ int binary_tree_default_compare(const T& first, const T& second) {
 
 template <typename T>
 class BinarySearchTreeBase {
+public:
+    using Comparator = int (*)(const T&, const T&);
 protected:
     struct Node {
         T data;
-        Node* left;
-        Node* right;
-        unsigned int height;
+        Node* left = nullptr;
+        Node* right = nullptr;
+        unsigned int height = 1;
 
         Node(const T& data);
     };
@@ -30,8 +32,6 @@ protected:
     void clear(Node* node) const;
     Node* find_node(Node* node, const T& data) const;
 public:
-    using Comparator = int (*)(const T&, const T&);
-
     BinarySearchTreeBase(Comparator compare = binary_tree_default_compare<T>);
     virtual ~BinarySearchTreeBase() = 0;
 

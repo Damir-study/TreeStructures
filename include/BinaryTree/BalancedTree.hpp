@@ -9,6 +9,7 @@ private:
     using Node = typename BinarySearchTreeBase<T>::Node;
     using BinarySearchTreeBase<T>::root;
     using BinarySearchTreeBase<T>::size;
+    using BinarySearchTreeBase<T>::compare;
     
     Node* rotate_right(Node*);
     Node* rotate_left(Node*);
@@ -22,8 +23,8 @@ public:
     BalancedTree();
     BalancedTree(Comparator compare);
 
-    void add(const T& data);
-    void remove(const T& data);
+    void add(const T&);
+    void remove(const T&);
 };
 
 #include "../../src/BinaryTree/BalancedTree.tpp"
