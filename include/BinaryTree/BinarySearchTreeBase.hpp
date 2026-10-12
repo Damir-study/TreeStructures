@@ -2,6 +2,8 @@
 #define BINARY_SEARCH_TREE_BASE_HPP
 
 #include <cstddef>
+#include <ostream>
+
 
 template <typename T>
 int binary_tree_default_compare(const T& first, const T& second) {
@@ -10,18 +12,29 @@ int binary_tree_default_compare(const T& first, const T& second) {
     return 0;
 }
 
+enum class Order {
+    KLP,
+    KPL,
+    PKL,
+    PLK,
+    LPK,
+    LKP
+};
+
 template <typename T>
 class BinarySearchTreeBase {
 public:
     using Comparator = int (*)(const T&, const T&);
+    using Visit = void (*)(const T&);
+    using Transform = T (*)(const T&);
 protected:
-    struct Node {
+    struct Node{
         T data;
         Node* left = nullptr;
         Node* right = nullptr;
         unsigned int height = 1;
 
-        Node(const T& data);
+        Node(const T& data); 
     };
 
     Node* root;
@@ -31,6 +44,12 @@ protected:
     Node* copy(Node* other_root) const;
     void clear(Node* node) const;
     Node* find_node(Node* node, const T& data) const;
+    void map_nodes(Node* node, BinarySearchTreeBase<T>* result, Transform transform) const;
+        
+    void traverse(Node* node, Order order, Visit visit) const;
+
+    void print_node(Node* node, std::ostream& out) const;
+    static void print_function(const T& value);
 public:
     BinarySearchTreeBase(Comparator compare = binary_tree_default_compare<T>);
     virtual ~BinarySearchTreeBase() = 0;
@@ -40,6 +59,11 @@ public:
     BinarySearchTreeBase(BinarySearchTreeBase&& other) noexcept;
     BinarySearchTreeBase& operator=(BinarySearchTreeBase&& other) noexcept;
 
+    virtual void add(const T& data) = 0;
+    virtual void remove(const T& data) = 0;
+    virtual BinarySearchTreeBase* create_empty() const = 0;
+    virtual BinarySearchTreeBase* copy() const = 0;
+
     T& get(const T& data);
     const T& get(const T& data) const;
     bool contains(const T& data) const;
@@ -47,6 +71,11 @@ public:
     std::size_t get_size() const;
     bool is_empty() const;
     void clear();
+    
+    BinarySearchTreeBase* map(Transform transform) const;
+    void traverse(Order order, Visit visit) const;
+    void print_tree(Order order) const;
+    void print_in_stream(std::ostream& out) const;
 };
 
 #include "../../src/BinaryTree/BinarySearchTreeBase.tpp"

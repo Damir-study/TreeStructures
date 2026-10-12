@@ -67,3 +67,13 @@ void BinarySearchTree<T>::remove(const T& value) {
     delete removed;
     --size;
 }
+
+template <typename T>
+BinarySearchTreeBase<T>* BinarySearchTree<T>::create_empty() const{
+    return new BinarySearchTree<T>(compare);
+}
+
+template <typename T>
+BinarySearchTreeBase<T>* BinarySearchTree<T>::copy() const{
+    return new BinarySearchTree<T>(*this);
+}

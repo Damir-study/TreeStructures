@@ -156,3 +156,13 @@ void BalancedTree<T>::remove(const T& value) {
         *path[i] = balance(*path[i]);
     }
 }
+
+template <typename T>
+BinarySearchTreeBase<T>* BalancedTree<T>::create_empty() const{
+    return new BalancedTree<T>(compare);
+}
+
+template <typename T>
+BinarySearchTreeBase<T>* BalancedTree<T>::copy() const{
+    return new BalancedTree<T>(*this);
+}

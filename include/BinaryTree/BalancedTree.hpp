@@ -23,8 +23,10 @@ public:
     BalancedTree();
     BalancedTree(Comparator compare);
 
-    void add(const T&);
-    void remove(const T&);
+    void add(const T&) override;
+    void remove(const T&) override;
+    BinarySearchTreeBase<T>* create_empty() const override;
+    BinarySearchTreeBase<T>* copy() const override;
 };
 
 #include "../../src/BinaryTree/BalancedTree.tpp"

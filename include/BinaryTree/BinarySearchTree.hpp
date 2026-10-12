@@ -17,8 +17,10 @@ public:
     BinarySearchTree();
     BinarySearchTree(Comparator compare);
 
-    void add(const T& data);
-    void remove(const T& data);
+    void add(const T& data) override;
+    void remove(const T& data) override;
+    BinarySearchTreeBase<T>* create_empty() const override;
+    BinarySearchTreeBase<T>* copy() const override;
 };
 
 #include "../../src/BinaryTree/BinarySearchTree.tpp"

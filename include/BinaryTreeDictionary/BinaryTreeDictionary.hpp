@@ -23,9 +23,8 @@ private:
 
     Comparator compare;
     BinarySearchTree<Pair> tree;
-    int default_compare(const Key& first, const Key& second);
 public:
-    BinaryTreeDictionary(Comparator compare = default_compare);
+    BinaryTreeDictionary(Comparator compare = binary_tree_default_compare<Key>);
     ~BinaryTreeDictionary() override = default;
     BinaryTreeDictionary(const BinaryTreeDictionary&) = default;
     BinaryTreeDictionary& operator=(const BinaryTreeDictionary&) = default;

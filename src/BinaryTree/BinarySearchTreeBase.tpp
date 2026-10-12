@@ -1,6 +1,14 @@
 #include "../../include/BinaryTree/BinarySearchTreeBase.hpp"
 
 #include <stdexcept>
+#include <iostream>
+#include <ostream>
+
+template <typename T>
+std::ostream& operator<<(std::ostream& out, const BinarySearchTreeBase<T>& tree) {
+    tree.print_in_stream(out);
+    return out;
+}
 
 template <typename T>
 BinarySearchTreeBase<T>::Node::Node(const T& data)
@@ -44,6 +52,64 @@ BinarySearchTreeBase<T>::find_node(Node* node, const T& data) const {
     }
 
     return nullptr;
+}
+
+template <typename T>
+void BinarySearchTreeBase<T>::map_nodes(Node* node, BinarySearchTreeBase<T>* result, Transform transform) const {
+    if (!node) return;
+
+    if (transform) result->add(transform(node->data));
+    else result->add(node->data);
+
+    map_nodes(node->left, result, transform);
+    map_nodes(node->right, result, transform);
+}
+
+
+template <typename T>
+void BinarySearchTreeBase<T>::traverse(Node* node, Order order, Visit visit) const{
+    if (!node) return;
+    if (!visit) return;
+
+    Node* first;
+    Node* second;
+    
+    if (order == Order::LPK || order == Order::LKP || order == Order::KLP) {
+        first = node->left;
+        second = node->right;
+    }
+    else {
+        first = node->right;
+        second = node->left;
+    }
+
+    if (order == Order::KLP || order == Order::KPL) {
+        visit(node->data);
+    }
+
+    traverse(first,order,visit);
+    if (order == Order::PKL || order == Order::LKP) {
+        visit(node->data);
+    }
+    traverse(second,order,visit);
+
+    if (order == Order::LPK || order == Order::PLK) {
+        visit(node->data);
+    }
+}
+
+template <typename T>
+void BinarySearchTreeBase<T>::print_node(Node* node, std::ostream& out) const {
+    if (!node) return;
+
+    print_node(node->left, out);
+    out << node->data << ' ';
+    print_node(node->right, out);
+}
+
+template <typename T>
+void BinarySearchTreeBase<T>::print_function(const T& value) {
+    std::cout << value << ' ';
 }
 
 template <typename T>
@@ -133,4 +199,31 @@ void BinarySearchTreeBase<T>::clear() {
     clear(root);
     root = nullptr;
     size = 0;
+}
+
+template <typename T>
+BinarySearchTreeBase<T>* BinarySearchTreeBase<T>::map(Transform transform) const {
+    if (!transform) {
+        return copy();
+    }
+
+    BinarySearchTreeBase<T>* result = create_empty();
+    map_nodes(root,result,transform);
+
+    return result;
+}
+
+template <typename T>
+void BinarySearchTreeBase<T>::traverse(Order order, Visit visit) const {
+    traverse(root, order, visit);
+}
+
+template <typename T>
+void BinarySearchTreeBase<T>::print_tree(Order order) const {
+    traverse(order, print_function);
+}
+
+template <typename T>
+void BinarySearchTreeBase<T>::print_in_stream(std::ostream& out) const {
+    print_node(root, out);
 }

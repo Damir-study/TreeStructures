@@ -1,13 +1,6 @@
 #include "../../include/BinaryTreeDictionary/BinaryTreeDictionary.hpp"
 
 template <typename Key, typename Value>
-int BinaryTreeDictionary<Key, Value>::default_compare(const Key& first, const Key& second) {
-    if (first < second) return -1;
-    if (second < first) return 1;
-    return 0;
-}
-
-template <typename Key, typename Value>
 BinaryTreeDictionary<Key, Value>::BinaryTreeDictionary(Comparator compare)
     : compare(compare), tree() {}
 
