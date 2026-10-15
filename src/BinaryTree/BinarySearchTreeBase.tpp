@@ -58,13 +58,79 @@ template <typename T>
 void BinarySearchTreeBase<T>::map_nodes(Node* node, BinarySearchTreeBase<T>* result, Transform transform) const {
     if (!node) return;
 
-    if (transform) result->add(transform(node->data));
-    else result->add(node->data);
+    result->add(transform(node->data));
 
     map_nodes(node->left, result, transform);
     map_nodes(node->right, result, transform);
 }
 
+
+template <typename T>
+void BinarySearchTreeBase<T>::where_nodes(Node* node, BinarySearchTreeBase<T>* result, Predicate predicate) const {
+    if (!node) return;
+
+    if (predicate(node->data)) result->add(node->data);
+    where_nodes(node->left, result, predicate);
+    where_nodes(node->right, result, predicate);
+}
+
+template <typename T>
+template <typename Y>
+void BinarySearchTreeBase<T>::reduce_nodes(Node* node, Y& result, Reducer<Y> function, Order order) const {
+    if (!node) return;
+
+    Node* first;
+    Node* second;
+    if (order == Order::LPK || order == Order::LKP || order == Order::KLP) {
+        first = node->left;
+        second = node->right;
+    } else {
+        first = node->right;
+        second = node->left;
+    }
+
+    if (order == Order::KLP || order == Order::KPL) {
+        result = function(node->data, result);
+    }
+    reduce_nodes(first, result, function, order);
+    if (order == Order::PKL || order == Order::LKP) {
+        result = function(node->data, result);
+    }
+    reduce_nodes(second, result, function, order);
+    if (order == Order::LPK || order == Order::PLK) {
+        result = function(node->data, result);
+    }
+}
+
+template <typename T>
+void BinarySearchTreeBase<T>::save_nodes(Node* node, std::string& result, StringConverter converter, Order order) const {
+    if (!node) return;
+
+    Node* first;
+    Node* second;
+    if (order == Order::LPK || order == Order::LKP || order == Order::KLP) {
+        first = node->left;
+        second = node->right;
+    } else {
+        first = node->right;
+        second = node->left;
+    }
+
+    if (order == Order::KLP || order == Order::KPL) {
+        result += converter(node->data);
+        result += ' ';
+    }
+    save_nodes(first, result, converter, order);
+    if (order == Order::PKL || order == Order::LKP) {
+        result += converter(node->data);
+        result += ' ';
+    }
+    save_nodes(second, result, converter, order);
+    if (order == Order::LPK || order == Order::PLK) {
+        result += converter(node->data);
+        result += ' ';
+    }
+}
 
 template <typename T>
 void BinarySearchTreeBase<T>::traverse(Node* node, Order order, Visit visit) const{
@@ -161,13 +227,6 @@ BinarySearchTreeBase<T>& BinarySearchTreeBase<T>::operator=(BinarySearchTreeBase
 }
 
 template <typename T>
-T& BinarySearchTreeBase<T>::get(const T& data) {
-    Node* node = find_node(root, data);
-    if (!node) throw std::runtime_error("Value is not in the tree");
-    return node->data;
-}
-
-template <typename T>
 const T& BinarySearchTreeBase<T>::get(const T& data) const {
     Node* node = find_node(root, data);
     if (!node) throw std::runtime_error("Value is not in the tree");
@@ -208,7 +267,48 @@ BinarySearchTreeBase<T>* BinarySearchTreeBase<T>::map(Transform transform) const
     }
 
     BinarySearchTreeBase<T>* result = create_empty();
-    map_nodes(root,result,transform);
+    try {
+        map_nodes(root, result, transform);
+    } catch (...) {
+        delete result;
+        throw;
+    }
+
+    return result;
+}
+
+template <typename T>
+BinarySearchTreeBase<T>* BinarySearchTreeBase<T>::where(Predicate predicate) const {
+    if (!predicate) throw std::invalid_argument("Predicate must not be null");
+
+    BinarySearchTreeBase<T>* result = create_empty();
+    try {
+        where_nodes(root, result, predicate);
+    } catch (...) {
+        delete result;
+        throw;
+    }
+
+    return result;
+}
+
+template <typename T>
+template <typename Y>
+Y BinarySearchTreeBase<T>::reduce(Reducer<Y> function, const Y& initial, Order order) const {
+    if (!function) throw std::invalid_argument("Reducer must not be null");
+
+    Y result = initial;
+    reduce_nodes(root, result, function, order);
+    return result;
+}
+
+template <typename T>
+std::string BinarySearchTreeBase<T>::to_string(StringConverter converter, Order order) const {
+    if (!converter) throw std::invalid_argument("String converter must not be null");
+
+    std::string result;
+    save_nodes(root, result, converter, order);
+    if (!result.empty()) result.pop_back();
 
     return result;
 }

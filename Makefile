@@ -1,7 +1,7 @@
 CXX = clang++
 CXXFLAGS = -std=c++17 -Wall -Wextra -pedantic-errors
 
-FILES = HashTable.hpp $(wildcard include/Abstract/*.hpp include/BinaryTree/*.hpp include/BinaryTreeDictionary/*.hpp)
+FILES = $(wildcard include/Abstract/*.hpp include/BinaryTree/*.hpp include/BinaryTreeDictionary/*.hpp)
 TEMPLATES = $(wildcard src/BinaryTree/*.tpp src/BinarytreeDictionary/*.tpp)
 GTEST = external/googletest/googletest
 

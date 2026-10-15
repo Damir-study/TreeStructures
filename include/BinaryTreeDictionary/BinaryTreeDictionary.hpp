@@ -11,7 +11,8 @@ public:
 private:
     struct Pair {
         Key key;
-        Value value;
+        // Only the key determines the tree order; the value may be updated.
+        mutable Value value;
         Comparator compare;
 
         Pair(const Key& key, Comparator compare) : key(key), value(), compare(compare) {}

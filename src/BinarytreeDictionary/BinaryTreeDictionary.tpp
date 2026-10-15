@@ -1,8 +1,12 @@
 #include "../../include/BinaryTreeDictionary/BinaryTreeDictionary.hpp"
 
+#include <stdexcept>
+
 template <typename Key, typename Value>
 BinaryTreeDictionary<Key, Value>::BinaryTreeDictionary(Comparator compare)
-    : compare(compare), tree() {}
+    : compare(compare), tree() {
+    if (!compare) throw std::invalid_argument("Comparator must not be null");
+}
 
 template <typename Key, typename Value>
 void BinaryTreeDictionary<Key, Value>::add(const Key& key, const Value& value) {
