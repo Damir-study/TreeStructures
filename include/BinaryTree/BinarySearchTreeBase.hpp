@@ -4,14 +4,7 @@
 #include <cstddef>
 #include <ostream>
 #include <string>
-
-
-template <typename T>
-int binary_tree_default_compare(const T& first, const T& second) {
-    if (first < second) return -1;
-    if (second < first) return 1;
-    return 0;
-}
+#include "../tools/Comparator.hpp"
 
 template <typename T>
 class BinarySearchTreeBase {
@@ -60,7 +53,7 @@ protected:
     void print_node(Node* node, std::ostream& out) const;
     static void print_function(const T& value);
 public:
-    BinarySearchTreeBase(Comparator compare = binary_tree_default_compare<T>);
+    BinarySearchTreeBase(Comparator compare = default_compare<T>);
     virtual ~BinarySearchTreeBase() = 0;
 
     BinarySearchTreeBase(const BinarySearchTreeBase& other);
@@ -73,7 +66,10 @@ public:
     virtual BinarySearchTreeBase* create_empty() const = 0;
     virtual BinarySearchTreeBase* copy() const = 0;
 
+    T& get(const T& data);
     const T& get(const T& data) const;
+    const T& top() const;
+    T extract_top();
     bool contains(const T& data) const;
     bool contains_key(const T& data) const;
     std::size_t get_size() const;

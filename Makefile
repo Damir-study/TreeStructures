@@ -1,8 +1,8 @@
 CXX = clang++
 CXXFLAGS = -std=c++17 -Wall -Wextra -pedantic-errors
 
-FILES = $(wildcard include/Abstract/*.hpp include/BinaryTree/*.hpp include/BinaryTreeDictionary/*.hpp)
-TEMPLATES = $(wildcard src/BinaryTree/*.tpp src/BinarytreeDictionary/*.tpp)
+FILES = $(wildcard include/Abstract/*.hpp include/BinaryTree/*.hpp include/BinaryTreeDictionary/*.hpp include/Dictionary/*.hpp include/BinaryHeap/*.hpp include/PriorityQueue/*.hpp include/tools/*.hpp)
+TEMPLATES = $(wildcard src/BinaryTree/*.tpp src/BinarytreeDictionary/*.tpp src/Dictionary/*.tpp src/BinaryHeap/*.tpp src/PriorityQueue/*.tpp)
 GTEST = external/googletest/googletest
 
 .PHONY: all test

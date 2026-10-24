@@ -84,7 +84,8 @@ void BinarySearchTreeBase<T>::reduce_nodes(Node* node, Y& result, Reducer<Y> fun
     if (order == Order::LPK || order == Order::LKP || order == Order::KLP) {
         first = node->left;
         second = node->right;
-    } else {
+    }
+    else {
         first = node->right;
         second = node->left;
     }
@@ -111,7 +112,8 @@ void BinarySearchTreeBase<T>::save_nodes(Node* node, std::string& result, String
     if (order == Order::LPK || order == Order::LKP || order == Order::KLP) {
         first = node->left;
         second = node->right;
-    } else {
+    }
+    else {
         first = node->right;
         second = node->left;
     }
@@ -227,10 +229,33 @@ BinarySearchTreeBase<T>& BinarySearchTreeBase<T>::operator=(BinarySearchTreeBase
 }
 
 template <typename T>
+T& BinarySearchTreeBase<T>::get(const T& data) {
+    Node* node = find_node(root, data);
+    if (!node) throw std::runtime_error("Value is not in the tree");
+    return node->data;
+}
+
+template <typename T>
 const T& BinarySearchTreeBase<T>::get(const T& data) const {
     Node* node = find_node(root, data);
     if (!node) throw std::runtime_error("Value is not in the tree");
     return node->data;
+}
+
+template <typename T>
+const T& BinarySearchTreeBase<T>::top() const {
+    if (!root) throw std::runtime_error("Tree is empty");
+
+    Node* node = root;
+    while (node->left) node = node->left;
+    return node->data;
+}
+
+template <typename T>
+T BinarySearchTreeBase<T>::extract_top() {
+    T value = top();
+    remove(value);
+    return value;
 }
 
 template <typename T>
