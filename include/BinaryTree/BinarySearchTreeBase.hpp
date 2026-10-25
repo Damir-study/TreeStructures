@@ -40,8 +40,10 @@ protected:
     Comparator compare;
 
     Node* copy(Node* other_root) const;
+    Node* copy(Node* other_root, std::size_t& count) const;
     void clear(Node* node) const;
     Node* find_node(Node* node, const T& data) const;
+    bool same_nodes(const Node* first, const Node* second) const;
     void map_nodes(Node* node, BinarySearchTreeBase<T>* result, Transform transform) const;
     void where_nodes(Node* node, BinarySearchTreeBase<T>* result, Predicate predicate) const;
     template <typename Y>
@@ -68,9 +70,11 @@ public:
 
     T& get(const T& data);
     const T& get(const T& data) const;
+    BinarySearchTreeBase* get_subtree(const T& root_value) const;
     const T& top() const;
     T extract_top();
     bool contains(const T& data) const;
+    bool contains_subtree(const BinarySearchTreeBase& subtree) const;
     bool contains_key(const T& data) const;
     std::size_t get_size() const;
     bool is_empty() const;

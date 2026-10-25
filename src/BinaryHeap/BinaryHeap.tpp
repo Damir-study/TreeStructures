@@ -115,6 +115,16 @@ std::size_t BinaryHeap<T>::find_index(const T& value) const {
 }
 
 template <typename T>
+bool BinaryHeap<T>::same_nodes(std::size_t index, const BinaryHeap& subtree, std::size_t subtree_index) const {
+    if (index >= size && subtree_index >= subtree.size) return true;
+    if (index >= size || subtree_index >= subtree.size) return false;
+    if (compare(items[index], subtree.items[subtree_index]) != 0) return false;
+
+    return same_nodes(2*index+1, subtree, 2*subtree_index+1)
+        && same_nodes(2*index+2, subtree, 2*subtree_index+2);
+}
+
+template <typename T>
 void BinaryHeap<T>::add(const T& value) {
     items.append(value);
     ++size;
@@ -155,6 +165,31 @@ const T& BinaryHeap<T>::get(const T& value) const {
 }
 
 template <typename T>
+BinaryHeap<T>* BinaryHeap<T>::get_subtree(const T& root_value) const {
+    std::size_t index = find_index(root_value);
+    if (index == size) throw std::runtime_error("Value is not in the heap");
+
+    BinaryHeap<T>* result = new BinaryHeap<T>(compare);
+    try {
+        std::size_t first = index;
+        std::size_t last = index;
+        while (first < size) {
+            for (std::size_t i = first; i <= last && i < size; ++i) {
+                result->items.append(items[i]);
+                ++result->size;
+            }
+            first = 2*first+1;
+            last = 2*last+2;
+        }
+    } catch (...) {
+        delete result;
+        throw;
+    }
+
+    return result;
+}
+
+template <typename T>
 const T& BinaryHeap<T>::top() const {
     if (size == 0) throw std::runtime_error("Heap is empty");
     return items[0];
@@ -179,6 +214,16 @@ bool BinaryHeap<T>::contains(const T& value) const {
 }
 
 template <typename T>
+bool BinaryHeap<T>::contains_subtree(const BinaryHeap& subtree) const {
+    if (subtree.is_empty()) return true;
+
+    for (std::size_t i = 0; i < size; ++i) {
+        if (same_nodes(i, subtree, 0)) return true;
+    }
+    return false;
+}
+
+template <typename T>
 std::size_t BinaryHeap<T>::get_size() const {
     return size;
 }
@@ -197,4 +242,28 @@ void BinaryHeap<T>::clear() {
 template <typename T>
 BinaryHeap<T>* BinaryHeap<T>::copy() const {
     return new BinaryHeap<T>(*this);
+}
+
+template <typename T>
+BinaryHeap<T> BinaryHeap<T>::map(Transform transform) const {
+    if (!transform) return *this;
+
+    BinaryHeap<T> result(compare);
+    for (std::size_t i = 0; i < size; ++i) {
+        result.add(transform(items[i]));
+    }
+
+    return result;
+}
+
+template <typename T>
+BinaryHeap<T> BinaryHeap<T>::where(Predicate predicate) const {
+    if (!predicate) throw std::invalid_argument("Predicate must not be null");
+
+    BinaryHeap<T> result(compare);
+    for (std::size_t i = 0; i < size; ++i) {
+        if (predicate(items[i])) result.add(items[i]);
+    }
+
+    return result;
 }

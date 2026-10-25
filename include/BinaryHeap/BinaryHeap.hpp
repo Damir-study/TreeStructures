@@ -9,6 +9,8 @@ template <typename T>
 class BinaryHeap {
 public:
     using Comparator = int (*)(const T&, const T&);
+    using Transform = T (*)(const T&);
+    using Predicate = bool (*)(const T&);
 private:
     mutable_array_sequence<T> items;
     std::size_t size;
@@ -19,6 +21,7 @@ private:
     void sift_down(std::size_t index);
 
     std::size_t find_index(const T& value) const;
+    bool same_nodes(std::size_t index, const BinaryHeap& subtree, std::size_t subtree_index) const;
 
 public:
     BinaryHeap(Comparator compare = default_compare<T>);
@@ -34,15 +37,19 @@ public:
     void remove(const T& value);
     T& get(const T& value);
     const T& get(const T& value) const;
+    BinaryHeap* get_subtree(const T& root_value) const;
     const T& top() const;
     T extract_top();
 
     bool contains(const T& value) const;
+    bool contains_subtree(const BinaryHeap& subtree) const;
 
     std::size_t get_size() const;
     bool is_empty() const;
     void clear();
     BinaryHeap* copy() const;
+    BinaryHeap map(Transform transform) const;
+    BinaryHeap where(Predicate predicate) const;
 };
 
 #include "../../src/BinaryHeap/BinaryHeap.tpp"

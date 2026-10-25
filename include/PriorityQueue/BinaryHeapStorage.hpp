@@ -8,8 +8,12 @@ template <typename T>
 class BinaryHeapStorage : public IPriorityQueueStorage<T> {
 public:
     using Comparator = typename BinaryHeap<T>::Comparator;
+    using Transform = typename IPriorityQueueStorage<T>::Transform;
+    using Predicate = typename IPriorityQueueStorage<T>::Predicate;
 private:
     BinaryHeap<T> heap;
+
+    explicit BinaryHeapStorage(BinaryHeap<T>&& heap);
 
 public:
     BinaryHeapStorage(Comparator compare = default_compare<T>);
@@ -30,6 +34,8 @@ public:
     void clear() override;
 
     BinaryHeapStorage* copy() const override;
+    BinaryHeapStorage* map(Transform transform) const override;
+    BinaryHeapStorage* where(Predicate predicate) const override;
 };
 
 #include "../../src/PriorityQueue/BinaryHeapStorage.tpp"

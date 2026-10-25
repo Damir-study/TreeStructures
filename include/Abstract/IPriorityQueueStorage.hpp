@@ -6,6 +6,9 @@
 template <typename T>
 class IPriorityQueueStorage {
 public:
+    using Transform = T (*)(const T&);
+    using Predicate = bool (*)(const T&);
+
     virtual ~IPriorityQueueStorage() = default;
 
     virtual void add(const T& value) = 0;
@@ -18,6 +21,8 @@ public:
     virtual void clear() = 0;
 
     virtual IPriorityQueueStorage* copy() const = 0;
+    virtual IPriorityQueueStorage* map(Transform transform) const = 0;
+    virtual IPriorityQueueStorage* where(Predicate predicate) const = 0;
 };
 
 #endif // IPRIORITY_QUEUE_STORAGE_HPP

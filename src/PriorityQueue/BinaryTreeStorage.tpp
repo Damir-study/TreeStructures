@@ -87,3 +87,30 @@ template <typename T>
 BinaryTreeStorage<T>* BinaryTreeStorage<T>::copy() const {
     return new BinaryTreeStorage<T>(*this);
 }
+
+template <typename T>
+BinaryTreeStorage<T>* BinaryTreeStorage<T>::map(Transform transform) const {
+    if (!tree) return copy();
+
+    BinarySearchTreeBase<T>* result = tree->map(transform);
+    try {
+        return new BinaryTreeStorage<T>(result);
+    } catch (...) {
+        delete result;
+        throw;
+    }
+}
+
+template <typename T>
+BinaryTreeStorage<T>* BinaryTreeStorage<T>::where(Predicate predicate) const {
+    if (!predicate) throw std::invalid_argument("Predicate must not be null");
+    if (!tree) return copy();
+
+    BinarySearchTreeBase<T>* result = tree->where(predicate);
+    try {
+        return new BinaryTreeStorage<T>(result);
+    } catch (...) {
+        delete result;
+        throw;
+    }
+}

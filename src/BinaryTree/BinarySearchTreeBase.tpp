@@ -17,18 +17,26 @@ BinarySearchTreeBase<T>::Node::Node(const T& data)
 template <typename T>
 typename BinarySearchTreeBase<T>::Node*
 BinarySearchTreeBase<T>::copy(Node* other_root) const {
+    std::size_t count = 0;
+    return copy(other_root, count);
+}
+
+template <typename T>
+typename BinarySearchTreeBase<T>::Node*
+BinarySearchTreeBase<T>::copy(Node* other_root, std::size_t& count) const {
     if (!other_root) return nullptr;
 
     Node* new_root = new Node(other_root->data);
     new_root->height = other_root->height;
     try {
-        new_root->left = copy(other_root->left);
-        new_root->right = copy(other_root->right);
+        new_root->left = copy(other_root->left, count);
+        new_root->right = copy(other_root->right, count);
     } catch (...) {
         clear(new_root);
         throw;
     }
 
+    ++count;
     return new_root;
 }
 
@@ -52,6 +60,16 @@ BinarySearchTreeBase<T>::find_node(Node* node, const T& data) const {
     }
 
     return nullptr;
+}
+
+template <typename T>
+bool BinarySearchTreeBase<T>::same_nodes(const Node* first, const Node* second) const {
+    if (!first && !second) return true;
+    if (!first || !second) return false;
+    if (compare(first->data, second->data) != 0) return false;
+
+    return same_nodes(first->left, second->left)
+        && same_nodes(first->right, second->right);
 }
 
 template <typename T>
@@ -243,6 +261,22 @@ const T& BinarySearchTreeBase<T>::get(const T& data) const {
 }
 
 template <typename T>
+BinarySearchTreeBase<T>* BinarySearchTreeBase<T>::get_subtree(const T& root_value) const {
+    Node* node = find_node(root, root_value);
+    if (!node) throw std::runtime_error("Value is not in the tree");
+
+    BinarySearchTreeBase<T>* result = create_empty();
+    try {
+        result->root = copy(node, result->size);
+    } catch (...) {
+        delete result;
+        throw;
+    }
+
+    return result;
+}
+
+template <typename T>
 const T& BinarySearchTreeBase<T>::top() const {
     if (!root) throw std::runtime_error("Tree is empty");
 
@@ -261,6 +295,14 @@ T BinarySearchTreeBase<T>::extract_top() {
 template <typename T>
 bool BinarySearchTreeBase<T>::contains(const T& data) const {
     return find_node(root, data) != nullptr;
+}
+
+template <typename T>
+bool BinarySearchTreeBase<T>::contains_subtree(const BinarySearchTreeBase& subtree) const {
+    if (!subtree.root) return true;
+
+    Node* node = find_node(root, subtree.root->data);
+    return same_nodes(node, subtree.root);
 }
 
 template <typename T>

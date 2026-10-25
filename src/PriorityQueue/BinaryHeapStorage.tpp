@@ -1,5 +1,11 @@
 #include "../../include/PriorityQueue/BinaryHeapStorage.hpp"
 
+#include <utility>
+
+template <typename T>
+BinaryHeapStorage<T>::BinaryHeapStorage(BinaryHeap<T>&& heap)
+    : heap(std::move(heap)) {}
+
 template <typename T>
 BinaryHeapStorage<T>::BinaryHeapStorage(Comparator compare)
     : heap(compare) {}
@@ -42,4 +48,14 @@ void BinaryHeapStorage<T>::clear() {
 template <typename T>
 BinaryHeapStorage<T>* BinaryHeapStorage<T>::copy() const {
     return new BinaryHeapStorage<T>(*this);
+}
+
+template <typename T>
+BinaryHeapStorage<T>* BinaryHeapStorage<T>::map(Transform transform) const {
+    return new BinaryHeapStorage<T>(heap.map(transform));
+}
+
+template <typename T>
+BinaryHeapStorage<T>* BinaryHeapStorage<T>::where(Predicate predicate) const {
+    return new BinaryHeapStorage<T>(heap.where(predicate));
 }

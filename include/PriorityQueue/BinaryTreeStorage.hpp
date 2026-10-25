@@ -6,6 +6,10 @@
 
 template <typename T>
 class BinaryTreeStorage : public IPriorityQueueStorage<T> {
+public:
+    using Transform = typename IPriorityQueueStorage<T>::Transform;
+    using Predicate = typename IPriorityQueueStorage<T>::Predicate;
+
 private:
     BinarySearchTreeBase<T>* tree;
 
@@ -28,6 +32,8 @@ public:
     void clear() override;
 
     BinaryTreeStorage* copy() const override;
+    BinaryTreeStorage* map(Transform transform) const override;
+    BinaryTreeStorage* where(Predicate predicate) const override;
 };
 
 #include "../../src/PriorityQueue/BinaryTreeStorage.tpp"

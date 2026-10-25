@@ -82,3 +82,32 @@ template <typename T>
 void PriorityQueue<T>::clear() {
     if (storage) storage->clear();
 }
+
+template <typename T>
+PriorityQueue<T> PriorityQueue<T>::map(Transform transform) const {
+    if (!storage) return *this;
+    return PriorityQueue<T>(storage->map(transform));
+}
+
+template <typename T>
+PriorityQueue<T> PriorityQueue<T>::where(Predicate predicate) const {
+    if (!predicate) throw std::invalid_argument("Predicate must not be null");
+    if (!storage) return *this;
+    return PriorityQueue<T>(storage->where(predicate));
+}
+
+template <typename T>
+template <typename Y>
+Y PriorityQueue<T>::reduce(Reducer<Y> function, const Y& initial) const {
+    if (!function) throw std::invalid_argument("Reducer must not be null");
+
+    Y result = initial;
+    PriorityQueue<T> source(*this);
+
+    while (!source.empty()) {
+        T value = source.pop();
+        result = function(value, result);
+    }
+
+    return result;
+}

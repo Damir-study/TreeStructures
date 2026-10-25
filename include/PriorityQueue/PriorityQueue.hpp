@@ -6,6 +6,12 @@
 
 template <typename T>
 class PriorityQueue {
+public:
+    using Transform = T (*)(const T&);
+    using Predicate = bool (*)(const T&);
+    template <typename Y>
+    using Reducer = Y (*)(const T&, const Y&);
+
 private:
     IPriorityQueueStorage<T>* storage;
 
@@ -26,6 +32,11 @@ public:
     bool empty() const;
     std::size_t get_size() const;
     void clear();
+
+    PriorityQueue map(Transform transform) const;
+    PriorityQueue where(Predicate predicate) const;
+    template <typename Y>
+    Y reduce(Reducer<Y> function, const Y& initial) const;
 };
 
 #include "../../src/PriorityQueue/PriorityQueue.tpp"
