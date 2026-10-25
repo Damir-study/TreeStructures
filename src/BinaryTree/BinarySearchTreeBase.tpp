@@ -5,12 +5,6 @@
 #include <ostream>
 
 template <typename T>
-std::ostream& operator<<(std::ostream& out, const BinarySearchTreeBase<T>& tree) {
-    tree.print_in_stream(out);
-    return out;
-}
-
-template <typename T>
 BinarySearchTreeBase<T>::Node::Node(const T& data)
     : data(data), left(nullptr), right(nullptr), height(1) {}
 
@@ -182,20 +176,6 @@ void BinarySearchTreeBase<T>::traverse(Node* node, Order order, Visit visit) con
     if (order == Order::LPK || order == Order::PLK) {
         visit(node->data);
     }
-}
-
-template <typename T>
-void BinarySearchTreeBase<T>::print_node(Node* node, std::ostream& out) const {
-    if (!node) return;
-
-    print_node(node->left, out);
-    out << node->data << ' ';
-    print_node(node->right, out);
-}
-
-template <typename T>
-void BinarySearchTreeBase<T>::print_function(const T& value) {
-    std::cout << value << ' ';
 }
 
 template <typename T>
@@ -386,11 +366,32 @@ void BinarySearchTreeBase<T>::traverse(Order order, Visit visit) const {
 }
 
 template <typename T>
-void BinarySearchTreeBase<T>::print_tree(Order order) const {
-    traverse(order, print_function);
-}
+void BinarySearchTreeBase<T>::print_structure(
+    std::ostream& out, StringConverter converter, std::size_t max_depth) const {
+    if (!converter) throw std::invalid_argument("String converter must not be null");
+    if (max_depth > 5) throw std::invalid_argument("Maximum depth is 5");
+    if (!root) { out << "[пусто]\n"; return; }
 
-template <typename T>
-void BinarySearchTreeBase<T>::print_in_stream(std::ostream& out) const {
-    print_node(root, out);
+    mutable_array_sequence<const Node*> level;
+    level.append(root);
+    mutable_array_sequence<mutable_array_sequence<std::string>> levels;
+    bool more = false;
+    for (std::size_t depth = 0; depth <= max_depth; ++depth) {
+        mutable_array_sequence<const Node*> next;
+        mutable_array_sequence<std::string> values;
+        more = false;
+        for (int i = 0; i < level.get_length(); ++i) {
+            const Node* node = level[i];
+            std::string value = node ? converter(node->data) : "";
+            values.append(node && value.empty() ? "\"\"" : value);
+            next.append(node ? node->left : nullptr);
+            next.append(node ? node->right : nullptr);
+            if (node && (node->left || node->right)) more = true;
+        }
+        levels.append(values);
+        if (!more) break;
+        level = next;
+    }
+    print_tree_levels(out, levels);
+    if (more) out << "... (ниже есть узлы)\n";
 }

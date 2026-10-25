@@ -5,6 +5,9 @@
 
 template <typename Key, typename Value>
 class Dictionary {
+public:
+    using Visit = typename IDictionaryStorage<Key, Value>::Visit;
+
 private:
     IDictionaryStorage<Key, Value>* storage;
 
@@ -25,6 +28,7 @@ public:
     std::size_t get_size() const;
     bool is_empty() const;
     void clear();
+    void traverse(Visit visit) const;
 };
 
 #include "../../src/Dictionary/Dictionary.tpp"

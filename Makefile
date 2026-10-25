@@ -10,8 +10,8 @@ GTEST = external/googletest/googletest
 all:
 	$(CXX) $(CXXFLAGS) -fsyntax-only -x c++ $(FILES)
 
-main: main.cpp
-	$(CXX) $(CXXFLAGS) -I. main.cpp -o main
+main: main.cpp src/UI/Benchmark.cpp include/UI/Input.hpp include/UI/Benchmark.hpp $(FILES) $(TEMPLATES)
+	$(CXX) $(CXXFLAGS) -O2 -I. main.cpp src/UI/Benchmark.cpp -o main
 
 tree_tests: tests.cpp $(FILES) $(TEMPLATES)
 	$(CXX) $(CXXFLAGS) -I. -I$(GTEST)/include -I$(GTEST) tests.cpp $(GTEST)/src/gtest-all.cc $(GTEST)/src/gtest_main.cc -pthread -o tree_tests

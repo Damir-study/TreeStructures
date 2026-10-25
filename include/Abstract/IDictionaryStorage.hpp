@@ -6,6 +6,8 @@
 template <typename Key, typename Value>
 class IDictionaryStorage {
 public:
+    using Visit = void (*)(const Key&, const Value&);
+
     virtual ~IDictionaryStorage() = default;
 
     virtual IDictionaryStorage* copy() const = 0;
@@ -17,6 +19,7 @@ public:
     virtual std::size_t get_size() const = 0;
     virtual bool is_empty() const = 0;
     virtual void clear() = 0;
+    virtual void traverse(Visit visit) const = 0;
 };
 
 #endif // IDICTIONARY_STORAGE_HPP

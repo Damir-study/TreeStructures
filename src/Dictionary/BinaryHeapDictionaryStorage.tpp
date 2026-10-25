@@ -50,6 +50,17 @@ void BinaryHeapDictionaryStorage<Key, Value>::clear() {
 }
 
 template <typename Key, typename Value>
+void BinaryHeapDictionaryStorage<Key, Value>::traverse(Visit visit) const {
+    if (!visit) throw std::invalid_argument("Visitor must not be null");
+
+    BinaryHeap<Pair> copy(heap);
+    while (!copy.is_empty()) {
+        Pair pair = copy.extract_top();
+        visit(pair.key, pair.value);
+    }
+}
+
+template <typename Key, typename Value>
 BinaryHeapDictionaryStorage<Key, Value>* BinaryHeapDictionaryStorage<Key, Value>::copy() const {
     return new BinaryHeapDictionaryStorage<Key, Value>(*this);
 }

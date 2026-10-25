@@ -2,8 +2,11 @@
 #define BINARY_HEAP_HPP
 
 #include <cstddef>
+#include <ostream>
+#include <string>
 #include "../../external/mutable_array_sequence.h"
 #include "../tools/Comparator.hpp"
+#include "../tools/TreePrinter.hpp"
 
 template <typename T>
 class BinaryHeap {
@@ -11,6 +14,7 @@ public:
     using Comparator = int (*)(const T&, const T&);
     using Transform = T (*)(const T&);
     using Predicate = bool (*)(const T&);
+    using StringConverter = std::string (*)(const T&);
 private:
     mutable_array_sequence<T> items;
     std::size_t size;
@@ -50,6 +54,7 @@ public:
     BinaryHeap* copy() const;
     BinaryHeap map(Transform transform) const;
     BinaryHeap where(Predicate predicate) const;
+    void print_structure(std::ostream& out, StringConverter converter, std::size_t max_depth = 3) const;
 };
 
 #include "../../src/BinaryHeap/BinaryHeap.tpp"

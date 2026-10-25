@@ -1,3 +1,4 @@
 *.pdf
 main
 tree_tests
+benchmark_results/*.csv

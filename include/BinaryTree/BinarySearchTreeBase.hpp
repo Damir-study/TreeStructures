@@ -5,6 +5,7 @@
 #include <ostream>
 #include <string>
 #include "../tools/Comparator.hpp"
+#include "../tools/TreePrinter.hpp"
 
 template <typename T>
 class BinarySearchTreeBase {
@@ -51,9 +52,6 @@ protected:
     void save_nodes(Node* node, std::string& result, StringConverter converter, Order order) const;
         
     void traverse(Node* node, Order order, Visit visit) const;
-
-    void print_node(Node* node, std::ostream& out) const;
-    static void print_function(const T& value);
 public:
     BinarySearchTreeBase(Comparator compare = default_compare<T>);
     virtual ~BinarySearchTreeBase() = 0;
@@ -86,8 +84,7 @@ public:
     Y reduce(Reducer<Y> function, const Y& initial, Order order = Order::LKP) const;
     std::string to_string(StringConverter converter, Order order = Order::LKP) const;
     void traverse(Order order, Visit visit) const;
-    void print_tree(Order order) const;
-    void print_in_stream(std::ostream& out) const;
+    void print_structure(std::ostream& out, StringConverter converter, std::size_t max_depth = 3) const;
 };
 
 #include "../../src/BinaryTree/BinarySearchTreeBase.tpp"

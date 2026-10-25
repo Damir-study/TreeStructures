@@ -267,3 +267,28 @@ BinaryHeap<T> BinaryHeap<T>::where(Predicate predicate) const {
 
     return result;
 }
+
+template <typename T>
+void BinaryHeap<T>::print_structure(
+    std::ostream& out, StringConverter converter, std::size_t max_depth) const {
+    if (!converter) throw std::invalid_argument("String converter must not be null");
+    if (max_depth > 5) throw std::invalid_argument("Maximum depth is 5");
+    if (is_empty()) { out << "[пусто]\n"; return; }
+
+    mutable_array_sequence<mutable_array_sequence<std::string>> levels;
+    std::size_t first = 0;
+    std::size_t count = 1;
+    for (std::size_t depth = 0; depth <= max_depth && first < size; ++depth) {
+        mutable_array_sequence<std::string> values;
+        for (std::size_t i = 0; i < count; ++i) values.append("");
+        for (std::size_t i = 0; i < count && first + i < size; ++i) {
+            values[i] = converter(items[first + i]);
+            if (values[i].empty()) values[i] = "\"\"";
+        }
+        levels.append(values);
+        first += count;
+        count *= 2;
+    }
+    print_tree_levels(out, levels);
+    if (first < size) out << "... (ниже есть узлы)\n";
+}

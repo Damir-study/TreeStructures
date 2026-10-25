@@ -10,6 +10,7 @@ class BinaryTreeDictionaryStorage : public IDictionaryStorage<Key, Value> {
 public:
     using Pair = DictionaryPair<Key, Value>;
     using Comparator = typename Pair::Comparator;
+    using Visit = typename IDictionaryStorage<Key, Value>::Visit;
 private:
     Comparator compare;
     BinarySearchTreeBase<Pair>* tree;
@@ -31,6 +32,7 @@ public:
     std::size_t get_size() const override;
     bool is_empty() const override;
     void clear() override;
+    void traverse(Visit visit) const override;
 
     BinaryTreeDictionaryStorage* copy() const override;
 };

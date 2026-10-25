@@ -88,3 +88,9 @@ template <typename Key, typename Value>
 void Dictionary<Key, Value>::clear() {
     if (storage) storage->clear();
 }
+
+template <typename Key, typename Value>
+void Dictionary<Key, Value>::traverse(Visit visit) const {
+    if (!visit) throw std::invalid_argument("Visitor must not be null");
+    if (storage) storage->traverse(visit);
+}

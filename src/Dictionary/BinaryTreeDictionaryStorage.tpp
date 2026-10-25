@@ -99,6 +99,24 @@ void BinaryTreeDictionaryStorage<Key, Value>::clear() {
 }
 
 template <typename Key, typename Value>
+void BinaryTreeDictionaryStorage<Key, Value>::traverse(Visit visit) const {
+    if (!visit) throw std::invalid_argument("Visitor must not be null");
+    if (!tree) return;
+
+    BinarySearchTreeBase<Pair>* copy = tree->copy();
+    try {
+        while (!copy->is_empty()) {
+            Pair pair = copy->extract_top();
+            visit(pair.key, pair.value);
+        }
+    } catch (...) {
+        delete copy;
+        throw;
+    }
+    delete copy;
+}
+
+template <typename Key, typename Value>
 BinaryTreeDictionaryStorage<Key, Value>* BinaryTreeDictionaryStorage<Key, Value>::copy() const {
     return new BinaryTreeDictionaryStorage<Key, Value>(*this);
 }
