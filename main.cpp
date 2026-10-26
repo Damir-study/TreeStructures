@@ -14,6 +14,7 @@
 #include "include/PriorityQueue/BinaryHeapStorage.hpp"
 #include "include/UI/Input.hpp"
 #include "include/UI/Benchmark.hpp"
+#include "include/tools/TreeTraversals.hpp"
 
 template <typename T>
 std::string to_text(const T& value) {
@@ -220,6 +221,24 @@ BinarySearchTreeBase<T>* create_tree(int kind, typename BinarySearchTreeBase<T>:
 }
 
 template <typename T>
+void print_traversed_value(const T& value) { std::cout << value << ' '; }
+
+template <typename T>
+typename BinarySearchTreeBase<T>::Traversal choose_traversal() {
+    std::cout << "1) КЛП 2) КПЛ 3) ПКЛ 4) ПЛК 5) ЛПК 6) ЛКП 7) В ширину\nОбход: ";
+    switch (get_int()) {
+        case 1: return traverse_klp<T>;
+        case 2: return traverse_kpl<T>;
+        case 3: return traverse_pkl<T>;
+        case 4: return traverse_plk<T>;
+        case 5: return traverse_lpk<T>;
+        case 6: return traverse_lkp<T>;
+        case 7: return breadth_first_traversal<T>;
+        default: throw std::invalid_argument("Неверный обход");
+    }
+}
+
+template <typename T>
 void tree_menu() {
     std::cout << "1) Дерево поиска\n2) AVL\nТип дерева: ";
     int kind = get_int();
@@ -251,11 +270,8 @@ void tree_menu() {
                 case 7: result = current->where(choose_where<T>()); break;
                 case 8: print_reduce<T>(*current); break;
                 case 9: {
-                    std::cout << "1) КЛП 2) КПЛ 3) ПКЛ 4) ПЛК 5) ЛПК 6) ЛКП\nОбход: ";
-                    int order = get_int();
-                    if (order < 1 || order > 6) throw std::invalid_argument("Неверный обход");
-                    auto selected = static_cast<typename BinarySearchTreeBase<T>::Order>(order - 1);
-                    std::cout << current->to_string(to_text<T>, selected) << '\n';
+                    current->traverse(print_traversed_value<T>, choose_traversal<T>());
+                    std::cout << '\n';
                     break;
                 }
                 case 10: std::cout << "Корень: "; result = current->get_subtree(get_value<T>()); break;

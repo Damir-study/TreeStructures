@@ -8,17 +8,15 @@
 #include "../tools/TreePrinter.hpp"
 
 template <typename T>
+class BinarySearchTreeBase;
+
+template <typename T>
+void traverse_lkp(const typename BinarySearchTreeBase<T>::INode* node,
+                  typename BinarySearchTreeBase<T>::Visit visit);
+
+template <typename T>
 class BinarySearchTreeBase {
 public:
-    enum class Order {
-        KLP,
-        KPL,
-        PKL,
-        PLK,
-        LPK,
-        LKP
-    };
-
     using Comparator = int (*)(const T&, const T&);
     using Visit = void (*)(const T&);
     using Transform = T (*)(const T&);
@@ -26,14 +24,27 @@ public:
     using StringConverter = std::string (*)(const T&);
     template <typename Y>
     using Reducer = Y (*)(const T&, const Y&);
+    class INode {
+    public:
+        virtual const T& get_data() const = 0;
+        virtual const INode* get_left() const = 0;
+        virtual const INode* get_right() const = 0;
+        virtual ~INode() = default;
+    };
+
+    using Traversal = void (*)(const INode*, Visit);
 protected:
-    struct Node{
+    class Node : public INode {
+    public:
         T data;
         Node* left = nullptr;
         Node* right = nullptr;
         unsigned int height = 1;
 
-        Node(const T& data); 
+        Node(const T& data);
+        const T& get_data() const override { return data; }
+        const INode* get_left() const override { return left; }
+        const INode* get_right() const override { return right; }
     };
 
     Node* root;
@@ -48,10 +59,9 @@ protected:
     void map_nodes(Node* node, BinarySearchTreeBase<T>* result, Transform transform) const;
     void where_nodes(Node* node, BinarySearchTreeBase<T>* result, Predicate predicate) const;
     template <typename Y>
-    void reduce_nodes(Node* node, Y& result, Reducer<Y> function, Order order) const;
-    void save_nodes(Node* node, std::string& result, StringConverter converter, Order order) const;
+    void reduce_nodes(Node* node, Y& result, Reducer<Y> function) const;
+    void save_nodes(Node* node, std::string& result, StringConverter converter) const;
         
-    void traverse(Node* node, Order order, Visit visit) const;
 public:
     BinarySearchTreeBase(Comparator compare = default_compare<T>);
     virtual ~BinarySearchTreeBase() = 0;
@@ -81,9 +91,9 @@ public:
     BinarySearchTreeBase* map(Transform transform) const;
     BinarySearchTreeBase* where(Predicate predicate) const;
     template <typename Y>
-    Y reduce(Reducer<Y> function, const Y& initial, Order order = Order::LKP) const;
-    std::string to_string(StringConverter converter, Order order = Order::LKP) const;
-    void traverse(Order order, Visit visit) const;
+    Y reduce(Reducer<Y> function, const Y& initial) const;
+    std::string to_string(StringConverter converter) const;
+    void traverse(Visit visit, Traversal traversal = traverse_lkp<T>) const;
     void print_structure(std::ostream& out, StringConverter converter, std::size_t max_depth = 3) const;
 };
 

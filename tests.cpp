@@ -27,7 +27,7 @@ std::string value_to_string(const int& value) { return std::to_string(value); }
 class TestBalancedTree : public BalancedTree<int> {
 public:
     int root_value() const {
-        return this->BinarySearchTreeBase<int>::root->data;
+        return this->BinarySearchTreeBase<int>::root->get_data();
     }
 };
 
